@@ -1,8 +1,5 @@
 #!/usr/bin/python3
-"""
-initialize the models package
-"""
-
+"""Instantiates a storage object."""
 from os import getenv
 
 

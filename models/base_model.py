@@ -33,18 +33,13 @@ class BaseModel:
             for key, value in kwargs.items():
                 if key != "__class__":
                     setattr(self, key, value)
-            if kwargs.get("created_at", None) and type(self.created_at) is str:
-                self.created_at = datetime.strptime(
-                        kwargs["created_at"], time_format)
-            else:
-                self.created_at = datetime.utcnow()
-            if kwargs.get("updated_at", None) and type(self.updated_at) is str:
-                self.updated_at = datetime.strptime(
-                        kwargs["updated_at"], time_format)
-            else:
-                self.updated_at = datetime.utcnow()
-            if kwargs.get("id", None) is None:
-                self.id = str(uuid.uuid4())
+            self.created_at = datetime.strptime(kwargs.get(
+                "created_at", datetime.utcnow().strftime(
+                    time_format)), time_format)
+            self.updated_at = datetime.strptime(kwargs.get(
+                "updated_at", datetime.utcnow().strftime(
+                    time_format)), time_format)
+            self.id = str(kwargs.get("id", uuid.uuid4()))
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.utcnow()
@@ -65,16 +60,13 @@ class BaseModel:
         """
         Return a dictionary containing all keys and values of the instance
         """
-        new_dict = self.__dict__.copy()
-        if "created_at" in new_dict:
-            new_dict["created_at"] = new_dict["created_at"].strftime(
-                    time_format)
-        if "updated_at" in new_dict:
-            new_dict["updated_at"] = new_dict["updated_at"].strftime(
-                    time_format)
+        new_dict = {
+            key: value.strftime(time_format) if isinstance(
+                value, datetime) else value
+            for key, value in self.__dict__.items()
+            if key != "_sa_instance_state"
+        }
         new_dict["__class__"] = self.__class__.__name__
-        if "_sa_instance_state" in new_dict:
-            del new_dict["_sa_instance_state"]
         return new_dict
 
     def delete(self):
