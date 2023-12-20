@@ -9,7 +9,7 @@ This repository contains the initial stage of a student project to build a clone
 | Tasks | Files | Description |
 | ----- | ----- | ------ |
 | 0: Authors/README File | [AUTHORS](https://github.com/justinmajetich/AirBnB_clone/blob/dev/AUTHORS) | Project authors |
-benaichalae@gmai.com
+benaichalae@gmail.com
 emmanuelochoja@gmail.com
 | 1: Pep8 | N/A | All code is pep8 compliant|
 | 2: Unit Testing | [/tests](https://github.com/justinmajetich/AirBnB_clone/tree/dev/tests) | All class-defining modules are unittested |
