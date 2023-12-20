@@ -26,9 +26,10 @@ class FileStorage:
     def all(self, cls=None):
         """Retrieve all stored instances or filtered instances by class."""
         if cls:
-            return {k: v for k, v in self.__objects.items(
-                ) if isinstance(v, cls)}
-        return self.__objects
+            return {key: obj for key, obj in self.__objects.items(
+                ) if isinstance(obj, cls)}
+        else:
+            return self.__objects
 
     def new(self, obj):
         """Add a new instance to the storage."""
