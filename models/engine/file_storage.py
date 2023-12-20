@@ -25,11 +25,12 @@ class FileStorage:
 
     def all(self, cls=None):
         """Retrieve all stored instances or filtered instances by class."""
-        if cls:
-            return {key: obj for key, obj in self.__objects.items(
-                ) if isinstance(obj, cls)}
-        else:
-            return self.__objects
+        if cls is not None:
+            if isinstance(cls, str):
+                cls = eval(cls)
+            return {k: v for k, v in self.__objects.items(
+                ) if isinstance(v, cls)}
+        return self.__objects
 
     def new(self, obj):
         """Add a new instance to the storage."""
@@ -59,7 +60,7 @@ class FileStorage:
     def delete(self, obj=None):
         """Remove an instance from storage if it exists."""
         if obj:
-            key = f"{obj.__class__.__name__}.{obj.id}"
+            key = "{}.{}".format(type(obj).__name__, obj.id)
             self.__objects.pop(key, None)
 
     def close(self):
