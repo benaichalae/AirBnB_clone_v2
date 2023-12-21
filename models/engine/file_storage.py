@@ -54,13 +54,13 @@ class FileStorage:
                 if class_name in CLASSES:
                     obj = CLASSES[class_name](**obj_dict)
                     self.__objects[key] = obj
-        except Exception as e:
+        except Exception as FileNotFoundError:
             pass
 
     def delete(self, obj=None):
         """Remove an instance from storage if it exists."""
         if obj:
-            key = "{}.{}".format(type(obj).__name__, obj.id)
+            key = "{}.{}".format(obj.__class__.__name__, obj.id)
             self.__objects.pop(key, None)
 
     def close(self):
