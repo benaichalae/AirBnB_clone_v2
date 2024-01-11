@@ -1,46 +1,37 @@
 #!/usr/bin/python3
-"""Fabric script to distribute an archive to web servers."""
-
-from fabric.api import env, put, run, local
-from os.path import exists
+"""Fabric script that distributes an archive to web servers"""
 from datetime import datetime
+from fabric.api import env, local, put, run
 import os
 
-env.hosts = ['<web_server_1_ip>', '<web_server_2_ip>']
-env.user = 'ubuntu'
-env.key_filename = '~/.ssh/my_ssh_private_key'
+env.hosts = ["3.90.81.20", "54.84.14.76"]
+env.user = "ubuntu"
+
+
+def do_pack():
+    local("mkdir -p versions")
+    date = datetime.now().strftime("%Y%m%d%H%M%S")
+    archived_f_path = "versions/web_static_{}.tgz".format(date)
+    t_gzip_archive = local("tar -cvzf {} web_static".format(archived_f_path))
+
+    return archived_f_path if t_gzip_archive.succeeded else None
 
 
 def do_deploy(archive_path):
-    """Distribute an archive to web servers."""
-    if not exists(archive_path):
-        return False
-
-    try:
-        put(archive_path, '/tmp/')
-
+    if os.path.exists(archive_path):
         filename = os.path.basename(archive_path)
-        release_name = os.path.basename(archive_path).split('.')[0]
-        release_folder = '/data/web_static/releases/{}'.format(release_name)
-        run('mkdir -p {}'.format(release_folder))
-        run('tar -xzf /tmp/{} -C {}'.format(filename, release_folder))
-
-        run('mv {}/web_static/* {}'.format(release_folder, release_folder))
-        run('rm -rf {}/web_static'.format(release_folder))
-
-        run('rm /tmp/{}'.format(filename))
-
-        current_link = '/data/web_static/current'
-        run('rm -rf {}'.format(current_link))
-        run('ln -s {} {}'.format(release_folder, current_link))
+        release_folder = "/data/web_static/releases/{}".format(filename[:-4])
+        put(archive_path, "/tmp/")
+        run("sudo mkdir -p {}".format(release_folder))
+        run("sudo tar -xzf /tmp/{} -C {}/".format(filename, release_folder))
+        run("sudo rm /tmp/{}".format(filename))
+        run("sudo mv {}/web_static/* {}".format(release_folder,
+            release_folder))
+        run("sudo rm -rf {}/web_static".format(release_folder))
+        run("sudo rm -rf /data/web_static/current")
+        run("sudo ln -s {} /data/web_static/current".format(release_folder))
 
         print("New version deployed!")
         return True
-    except Exception as e:
-        return False
 
-
-if __name__ == "__main__":
-    archive_path = local("fab -f 1-pack_web_static.py do_pack", capture=True)
-    archive_path = archive_path.strip()
-    do_deploy(archive_path)
+    return False
