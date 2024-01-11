@@ -9,6 +9,7 @@ env.user = "ubuntu"
 
 
 def do_pack():
+    """generate tgz"""
     local("mkdir -p versions")
     date = datetime.now().strftime("%Y%m%d%H%M%S")
     archived_f_path = "versions/web_static_{}.tgz".format(date)
@@ -18,6 +19,7 @@ def do_pack():
 
 
 def do_deploy(archive_path):
+    """deploy archive to server"""
     if os.path.exists(archive_path):
         filename = os.path.basename(archive_path)
         release_folder = "/data/web_static/releases/{}".format(filename[:-4])
