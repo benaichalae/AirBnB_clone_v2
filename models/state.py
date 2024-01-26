@@ -40,3 +40,12 @@ class State(BaseModel, Base):
                 if city.state_id == self.id:
                     city_list.append(city)
             return city_list
+
+    def cities(self):
+        """
+        Getter method for the list of city instances related to the state.
+        This is used when storage_t is set to 'db'.
+        """
+        if models.storage_t == "db":
+            from models import storage
+            return [city for city in storage.all(City).values() if city.state_id == self.id]
